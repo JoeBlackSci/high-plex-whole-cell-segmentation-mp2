@@ -1,6 +1,7 @@
 """Functions for manipulating and visualising high-plex fluorescence images."""
 
 import matplotlib.pyplot as plt
+from tifffile import imwrite
 
 
 def visimgs(imgs,
@@ -41,3 +42,25 @@ def tifcomb(imgs):
         outimg += imgs[i]
 
     return outimg
+
+
+def crop(imgs, rows, cols, savepath=None, imgnames=None):
+    """Crop list of np arrays to specified rows and columns.
+
+    - rows and cols should be list/tupple specifying the slice to crop to.
+    - optional savepath will save images to the specified path.
+    - optional imgnames should be list of names for imgs.
+    """
+    cropped = [img[rows[0]:rows[1], cols[0]:cols[1]] for img in imgs]
+
+    if savepath:
+
+        if not imgnames:
+            imgnames = list(range(len(imgs)))
+        elif len(imgnames) != len(imgs):
+            raise ValueError("imgnames must be same length as imgs or None")
+
+        for i, img in enumerate(cropped):
+            imwrite(savepath + imgnames[i], img)
+
+    return cropped
